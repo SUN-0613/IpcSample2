@@ -1,0 +1,26 @@
+﻿<Window x:Class="IpcSampleSub.Forms.View.SubView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:IpcSampleSub.Forms.ViewModel"
+        mc:Ignorable="d"
+        Title="SubView" Height="150" Width="300">
+    <Window.DataContext>
+        <vm:SubViewModel />
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Content="Now Loading..." Foreground="Gray" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Visibility="{Binding Visible}" />
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" >
+            <TextBlock Text="Now =" TextAlignment="Right" VerticalAlignment="Center" Width="150" />
+            <TextBlock Text="{Binding NowValue}" TextAlignment="Left" VerticalAlignment="Center" Padding="3,0" />
+        </StackPanel>
+
+    </Grid>
+</Window>
