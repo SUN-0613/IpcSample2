@@ -1,4 +1,5 @@
 ﻿using System.ServiceModel;
+using System.Threading.Tasks;
 
 namespace IpcSampleCommonLibrary.Interface
 {
@@ -13,7 +14,7 @@ namespace IpcSampleCommonLibrary.Interface
 
         /// <summary>読み込み実行</summary>
         [OperationContract]
-        void Execute();
+        Task<int> Execute();
 
     }
 

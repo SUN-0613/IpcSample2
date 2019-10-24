@@ -32,9 +32,6 @@ namespace IpcSampleSub.Forms.Model
         /// <summary>現在値の更新</summary>
         private ChangeValueDelegate _ChangeValue;
 
-        /// <summary>メインプロジェクト</summary>
-        private IResult _Main;
-
         /// <summary>IPC通信サービス</summary>
         private ServiceHost _Host;
 
@@ -46,12 +43,6 @@ namespace IpcSampleSub.Forms.Model
 
             _ChangeVisible = changeVisible;
             _ChangeValue = changeValue;
-
-            // メインプロジェクトへの通信設定
-            _Main = new ChannelFactory<IResult>(
-                new NetNamedPipeBinding(),
-                new EndpointAddress(ServiceMethod.GetMainAddress())
-                ).CreateChannel();
 
             // サーバ設定
             _Host = new ServiceHost(this, new Uri(ServiceMethod.GetSubBaseAddress()));
@@ -72,15 +63,16 @@ namespace IpcSampleSub.Forms.Model
         }
 
         /// <summary>値取得実行</summary>
-        public void Execute()
+        async Task<int> IExecute.Execute()
         {
 
-            Task.Run(() =>
+            var value = -1;
+
+            await Task.Run(() =>
             {
 
                 _ChangeVisible(Visibility.Visible);
 
-                var value = -1;
                 var random = new Random(DateTime.Now.Second * 1000 + DateTime.Now.Millisecond);
 
                 for (var iLoop = 0; iLoop < 5; iLoop++)
@@ -93,11 +85,11 @@ namespace IpcSampleSub.Forms.Model
 
                 }
 
-                _Main.SetResult(value);
-
                 _ChangeVisible(Visibility.Hidden);
 
             });
+
+            return value;
 
         }
 

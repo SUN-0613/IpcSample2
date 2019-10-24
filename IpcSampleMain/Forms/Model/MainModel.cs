@@ -3,14 +3,13 @@ using IpcSampleCommonLibrary.Method;
 using System;
 using System.Diagnostics;
 using System.ServiceModel;
-using System.Threading.Tasks;
 
 namespace IpcSampleMain.Forms.Model
 {
 
     /// <summary>IPC通信：メイン.Model</summary>
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    public class MainModel : IResult, IDisposable
+    public class MainModel : IDisposable
     {
 
         #region Delegate
@@ -27,9 +26,6 @@ namespace IpcSampleMain.Forms.Model
         /// <summary>サブプロジェクト</summary>
         private IExecute _Sub;
 
-        /// <summary>サーバ設定</summary>
-        private ServiceHost _Host;
-
         /// <summary>IPC通信：メイン.Model</summary>
         /// <param name="changeResult">結果更新</param>
         public MainModel(ChangeResultDelegate changeResult)
@@ -43,51 +39,30 @@ namespace IpcSampleMain.Forms.Model
                 new EndpointAddress(ServiceMethod.GetSubAddress())
                 ).CreateChannel();
 
-            // サーバ設定
-            _Host = new ServiceHost(this, new Uri(ServiceMethod.GetMainBaseAddress()));
-            _Host.AddServiceEndpoint(typeof(IResult), new NetNamedPipeBinding(), ServiceMethod.GetMainEndpoint());
-            _Host.Open();
-
         }
 
         /// <summary>解放処理</summary>
         public void Dispose()
         {
-
-            _Host.Close();
-
             _ChangeResult = null;
-
         }
 
         /// <summary>値取得実行</summary>
-        public void Execute()
+        public async void Execute()
         {
 
-            Task.Run(() => 
+            try
             {
 
-                try
-                {
+                // サブプロジェクトにて値取得実行
+                _ChangeResult?.Invoke(await _Sub.Execute());
 
-                    // サブプロジェクトにて値取得実行
-                    _Sub.Execute();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
 
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                }
-
-            });
-
-        }
-
-        /// <summary>結果のセット</summary>
-        /// <param name="value">結果の値</param>
-        public void SetResult(int value)
-        {
-            _ChangeResult(value);
         }
 
     }
